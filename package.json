@@ -1,0 +1,25 @@
+{
+  "name": "shikshasetu",
+  "version": "1.0.0",
+  "description": "ShikshaSetu — Practical Learning & Education Improvement Platform",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend": "npm --prefix backend start",
+    "backend:dev": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "test": "npm --prefix backend test"
+  },
+  "keywords": [
+    "education",
+    "offline-first",
+    "india",
+    "learning-by-doing",
+    "government-schools"
+  ],
+  "author": "ShikshaSetu Core Team",
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">शिक्षासेतु</string>
+    <string name="tagline">करके सीखें, समझकर बढ़ें</string>
+    <string name="login_student">विद्यार्थी प्रवेश</string>
+    <string name="student_id_hint">विद्यार्थी पहचान संख्या (उदा. STU-1001)</string>
+    <string name="pin_hint">सुरक्षा पिन (4 अंक)</string>
+    <string name="sign_in">प्रवेश करें</string>
+    <string name="my_projects">मेरी सीखने की परियोजनाएं</string>
+    <string name="water_project_title">जल संरक्षण: समझें डेटा, बचाएं जल</string>
+    <string name="water_project_desc">कक्षा 6 के लिए 3 दिवसीय व्यावहारिक विज्ञान एवं डेटा विश्लेषण परियोजना</string>
+    <string name="day_1">दिवस 1: निरीक्षण और पहचान</string>
+    <string name="day_2">दिवस 2: डेटा संग्रह और समझ</string>
+    <string name="day_3">दिवस 3: व्यावहारिक समाधान</string>
+    <string name="submit_worksheet">कार्यपत्रक जमा करें</string>
+    <string name="offline_saved">उपकरण पर सुरक्षित सहेजा गया (ऑफ़लाइन)</string>
+    <string name="sync_status_pending">प्रतीक्षारत सिंक</string>
+    <string name="sync_status_synced">सर्वर से सिंक पूर्ण</string>
+    <string name="my_progress">मेरी प्रगति एवं शिक्षक टिप्पणी</string>
+    <string name="sign_out">सुरक्षित प्रस्थान</string>
+</resources>

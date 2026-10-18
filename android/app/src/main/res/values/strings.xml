@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">ShikshaSetu</string>
+    <string name="tagline">Learn by Doing, Grow by Understanding</string>
+    <string name="login_student">Student Login</string>
+    <string name="student_id_hint">Student ID (e.g. STU-1001)</string>
+    <string name="pin_hint">Security PIN (4 digits)</string>
+    <string name="sign_in">Sign In</string>
+    <string name="my_projects">My Learning Projects</string>
+    <string name="water_project_title">Save Water, Understand Data</string>
+    <string name="water_project_desc">3-Day practical project for Class 6 science and data interpretation</string>
+    <string name="day_1">Day 1: Observe &amp; Identify</string>
+    <string name="day_2">Day 2: Collect &amp; Understand Data</string>
+    <string name="day_3">Day 3: Propose Solutions</string>
+    <string name="submit_worksheet">Submit Worksheet</string>
+    <string name="offline_saved">Saved locally on device (Offline)</string>
+    <string name="sync_status_pending">Pending Sync</string>
+    <string name="sync_status_synced">Synced with Server</string>
+    <string name="my_progress">My Progress &amp; Feedback</string>
+    <string name="sign_out">Sign Out</string>
+</resources>
