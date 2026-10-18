@@ -1,0 +1,8 @@
+{
+  "appId": "org.shikshasetu.app",
+  "appName": "शिक्षासेतु",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

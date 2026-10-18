@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">शिक्षासेतु</string>
+    <string name="title_activity_main">शिक्षासेतु</string>
+    <string name="package_name">org.shikshasetu.app</string>
+    <string name="custom_url_scheme">org.shikshasetu.app</string>
+</resources>

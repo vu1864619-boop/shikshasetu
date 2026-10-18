@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.js';
 import { useLanguage } from '../context/LanguageContext.js';
 import { SyncBadge } from './SyncBadge.js';
-import { BookOpen, LogOut, Languages, School, User as UserIcon } from 'lucide-react';
+import { BookOpen, LogOut, Languages, School, User as UserIcon, Download } from 'lucide-react';
 
 interface NavbarProps {
   currentTab: string;
@@ -12,6 +12,26 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
@@ -40,8 +60,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
             </div>
           </div>
 
-          {/* Right section: Sync indicator, Language toggle, Auth controls */}
+          {/* Right section: Install app, Sync indicator, Language toggle, Auth controls */}
           <div className="flex items-center gap-3">
+            {deferredPrompt && (
+              <button
+                onClick={handleInstallApp}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-brand-600 hover:bg-brand-700 text-white shadow-sm transition animate-bounce"
+                title="फोन पर ऐप इंस्टॉल करें"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>{language === 'hi' ? 'ऐप इंस्टॉल करें' : 'Install App'}</span>
+              </button>
+            )}
+
             <SyncBadge />
 
             {/* Language Switcher */}
