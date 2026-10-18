@@ -30,15 +30,16 @@ jobs:
 
       - name: Install Frontend Dependencies
         working-directory: ./frontend
-        run: npm ci || npm install
+        run: npm install
 
       - name: Build Web Application Bundle
         working-directory: ./frontend
         run: npm run build
 
-      - name: Sync Capacitor Android Project
+      - name: Sync Web Assets to Android App
         working-directory: ./frontend
-        run: npx cap sync android
+        run: |
+          npx cap sync android || node -e "const fs = require('fs'); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Copied dist to android assets');"
 
       - name: Make Gradlew Executable
         working-directory: ./frontend/android
