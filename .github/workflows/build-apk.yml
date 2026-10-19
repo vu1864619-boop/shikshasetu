@@ -42,19 +42,19 @@ jobs:
           npx cap sync android || node -e "const fs = require('fs'); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Copied dist to android assets');"
           node -e "const fs = require('fs'); const p = 'android/capacitor.settings.gradle'; if (fs.existsSync(p)) { let c = fs.readFileSync(p, 'utf8'); c = c.replace('../../node_modules', '../node_modules'); fs.writeFileSync(p, c); console.log('Fixed capacitor.settings.gradle path'); }"
 
-      - name: Make Native Gradlew Executable
-        working-directory: ./android
+      - name: Make Gradlew Executable
+        working-directory: ./frontend/android
         run: chmod +x gradlew
 
       - name: Build Android Debug APK
         id: build_apk
-        working-directory: ./android
+        working-directory: ./frontend/android
         run: |
           ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Inspect Gradle Log If Failed
         if: failure()
-        working-directory: ./android
+        working-directory: ./frontend/android
         run: |
           echo "==== DIRECTORY CONTENTS ===="
           ls -laR app/build || true
