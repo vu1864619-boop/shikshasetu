@@ -62,14 +62,18 @@ jobs:
       - name: Rename and Stage APK
         run: |
           mkdir -p build-artifacts
-          APK_FILE=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
-          if [ -z "$APK_FILE" ]; then
-            echo "Searching all built apks..."
-            APK_FILE=$(find . -name "*.apk" | head -n 1)
+          echo "=== Searching for APK files ==="
+          find . -name "*.apk" -ls
+          APK_FILE=$(find . -name "*.apk" | grep -E "app.*debug.*\.apk|\.apk" | head -n 1)
+          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
+            echo "Selected APK: $APK_FILE"
+            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+            echo "Staged to build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
+          else
+            echo "No APK found in find search. Inspecting build output directories:"
+            ls -laR android/app/build/outputs || true
+            exit 1
           fi
-          echo "Found APK at: $APK_FILE"
-          cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
-          echo "APK staged successfully at build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
           ls -lh build-artifacts/
 
       - name: Upload APK as GitHub Artifact
