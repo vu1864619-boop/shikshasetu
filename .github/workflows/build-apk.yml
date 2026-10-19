@@ -28,9 +28,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend
-        run: npm install
+      - name: Install All Dependencies
+        run: |
+          npm install
+          cd frontend && npm install
 
       - name: Build Web Application Bundle
         working-directory: ./frontend
@@ -40,7 +41,6 @@ jobs:
         working-directory: ./frontend
         run: |
           npx cap sync android || node -e "const fs = require('fs'); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Copied dist to android assets');"
-          node -e "const fs = require('fs'); const p = 'android/capacitor.settings.gradle'; if (fs.existsSync(p)) { let c = fs.readFileSync(p, 'utf8'); c = c.replace('../../node_modules', '../node_modules'); fs.writeFileSync(p, c); console.log('Fixed capacitor.settings.gradle path'); }"
 
       - name: Make Gradlew Executable
         working-directory: ./frontend/android
