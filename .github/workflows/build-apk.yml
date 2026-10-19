@@ -40,7 +40,7 @@ jobs:
       - name: Sync Web Assets to Android App
         working-directory: ./frontend
         run: |
-          npx cap sync android || node -e "const fs = require('fs'); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Copied dist to android assets');"
+          node -e "const fs = require('fs'); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Copied dist to android assets');"
 
       - name: Make Gradlew Executable
         working-directory: ./frontend/android
@@ -50,14 +50,14 @@ jobs:
         id: build_apk
         working-directory: ./frontend/android
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee gradle-build.log
 
       - name: Inspect Gradle Log If Failed
         if: failure()
         working-directory: ./frontend/android
         run: |
-          echo "==== DIRECTORY CONTENTS ===="
-          ls -laR app/build || true
+          echo "==== GRADLE ERROR LOG TAIL ===="
+          tail -n 120 gradle-build.log || true
 
       - name: Rename and Stage APK
         run: |
