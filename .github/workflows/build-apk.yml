@@ -62,18 +62,16 @@ jobs:
       - name: Rename and Stage APK
         run: |
           mkdir -p build-artifacts
-          echo "=== Searching for APK files ==="
-          find . -name "*.apk" -ls
-          APK_FILE=$(find . -name "*.apk" | grep -E "app.*debug.*\.apk|\.apk" | head -n 1)
-          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
-            echo "Selected APK: $APK_FILE"
-            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
-            echo "Staged to build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
+          if [ -f "frontend/android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp frontend/android/app/build/outputs/apk/debug/app-debug.apk build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+          elif [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp android/app/build/outputs/apk/debug/app-debug.apk build-artifacts/ShikshaSetu-v1.0.0-debug.apk
           else
-            echo "No APK found in find search. Inspecting build output directories:"
-            ls -laR android/app/build/outputs || true
-            exit 1
+            APK_FILE=$(find . -name "*.apk" | head -n 1)
+            echo "Fallback found: $APK_FILE"
+            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
           fi
+          echo "APK successfully staged:"
           ls -lh build-artifacts/
 
       - name: Upload APK as GitHub Artifact
