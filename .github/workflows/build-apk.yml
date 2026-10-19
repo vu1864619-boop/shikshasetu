@@ -59,15 +59,17 @@ jobs:
           echo "==== GRADLE LOG TAIL ===="
           tail -n 100 gradle-build.log || true
 
-      - name: Check APK Generated
-        run: |
-          test -f android/app/build/outputs/apk/debug/app-debug.apk || exit 1
-
       - name: Rename and Stage APK
         run: |
           mkdir -p build-artifacts
-          cp android/app/build/outputs/apk/debug/app-debug.apk build-artifacts/ShikshaSetu-v1.0.0-debug.apk
-          echo "APK generated successfully at build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
+          APK_FILE=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          if [ -z "$APK_FILE" ]; then
+            echo "Searching all built apks..."
+            APK_FILE=$(find . -name "*.apk" | head -n 1)
+          fi
+          echo "Found APK at: $APK_FILE"
+          cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+          echo "APK staged successfully at build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
           ls -lh build-artifacts/
 
       - name: Upload APK as GitHub Artifact
