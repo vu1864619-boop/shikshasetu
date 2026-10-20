@@ -50,14 +50,16 @@ jobs:
         id: build_apk
         working-directory: ./frontend/android
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          set -o pipefail
+          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee /tmp/gradle-build.log
 
-      - name: Inspect Gradle Log If Failed
+      - name: Upload Gradle Build Log on Failure
         if: failure()
-        working-directory: ./frontend/android
-        run: |
-          echo "==== GRADLE ERROR LOG TAIL ===="
-          tail -n 120 gradle-build.log || true
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-failure-log
+          path: /tmp/gradle-build.log
+          retention-days: 7
 
       - name: Rename and Stage APK
         working-directory: ./frontend/android
