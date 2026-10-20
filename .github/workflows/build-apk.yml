@@ -53,24 +53,24 @@ jobs:
           ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee /tmp/gradle.log || (echo "=== GRADLE ERROR LOG START ===" && cat /tmp/gradle.log && exit 1)
 
       - name: Rename and Stage APK
-        working-directory: ./frontend/android
         run: |
-          mkdir -p ../../build-artifacts
-          echo "=== PWD and APK search ==="
-          pwd
-          find . -name "*.apk" -ls
+          mkdir -p build-artifacts
+          echo "=== Diagnostic: scanning entire workspace for any .apk file ==="
+          find . -type f -name "*.apk"
           
-          # In frontend/android, the output APK is at app/build/outputs/apk/debug/app-debug.apk
-          if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
-            cp -v "app/build/outputs/apk/debug/app-debug.apk" "../../build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
+          # Find any .apk in frontend/android or android or current dir
+          APK_FILE=$(find . -type f -name "*.apk" | head -n 1)
+          
+          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
+            echo "SUCCESS: Found APK file at $APK_FILE"
+            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+            echo "Staged successfully:"
+            ls -lh build-artifacts/ShikshaSetu-v1.0.0-debug.apk
           else
-            APK_FOUND=$(find . -name "*debug*.apk" -o -name "*.apk" | head -n 1)
-            echo "Alternative APK located: $APK_FOUND"
-            cp -v "$APK_FOUND" "../../build-artifacts/ShikshaSetu-v1.0.0-debug.apk"
+            echo "WARNING: No APK found with find, checking direct path"
+            ls -la frontend/android/app/build/outputs/apk/debug/ || true
+            exit 1
           fi
-          
-          echo "=== Build artifacts directory ==="
-          ls -lh ../../build-artifacts/ShikshaSetu-v1.0.0-debug.apk
 
       - name: Upload APK as GitHub Artifact
         uses: actions/upload-artifact@v4
