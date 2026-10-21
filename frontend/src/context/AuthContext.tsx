@@ -28,8 +28,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(() => {
-    const saved = localStorage.getItem('shikshasetu_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('shikshasetu_user');
+      if (!saved || saved === 'undefined' || saved === 'null') return null;
+      return JSON.parse(saved);
+    } catch {
+      localStorage.removeItem('shikshasetu_user');
+      return null;
+    }
   });
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('shikshasetu_token');
@@ -81,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('shikshasetu_token', newToken);
-      localStorage.setItem('shikshasetu_user', JSON.stringify(userData));
+      if (userData) localStorage.setItem('shikshasetu_user', JSON.stringify(userData));
       return { success: true };
     }
 
@@ -130,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('shikshasetu_token', newToken);
-      localStorage.setItem('shikshasetu_user', JSON.stringify(userData));
+      if (userData) localStorage.setItem('shikshasetu_user', JSON.stringify(userData));
       return { success: true };
     }
 
