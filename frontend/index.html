@@ -13,19 +13,38 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/icon.svg" />
     <title>शिक्षासेतु | ShikshaSetu</title>
-    <!-- Hindi & English Google Fonts -->
+    <!-- Hindi & English Google Fonts (Asynchronous / Non-render-blocking for offline safety) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+    </noscript>
   </head>
   <body class="bg-slate-50 text-slate-800 antialiased min-h-screen selection:bg-brand-100 selection:text-brand-700">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
     <script>
-      if ('serviceWorker' in navigator) {
+      // Service Worker handling:
+      // In native Android WebView / Capacitor (https://localhost or capacitor://), DO NOT register Service Worker
+      // because it intercepts local asset requests and returns HTML fallbacks causing blank screens.
+      const isNativeApp = window.Capacitor !== undefined || 
+                          window.location.protocol === 'capacitor:' || 
+                          window.location.protocol === 'file:' ||
+                          (window.location.hostname === 'localhost' && window.location.port === '');
+
+      if (!isNativeApp && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
+          navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration error:', err));
         });
+      } else if (isNativeApp && 'serviceWorker' in navigator) {
+        // Clean up any stale service workers previously installed inside WebView
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (const registration of registrations) {
+            registration.unregister();
+          }
+        }).catch(() => {});
       }
     </script>
   </body>

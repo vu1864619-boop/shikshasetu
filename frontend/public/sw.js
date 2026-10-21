@@ -47,7 +47,11 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        return caches.match('/');
+        // Only return cached root for HTML navigation requests, NOT for scripts/styles
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
+        return Promise.reject(new Error('Resource not in cache and network offline'));
       });
     })
   );

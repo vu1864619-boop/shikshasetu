@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { idbStorage, OfflineSubmissionRecord } from '../utils/idbStorage.js';
 import { apiRequest } from '../utils/api.js';
 import { useAuth } from './AuthContext.js';
+import { generateUUID } from '../utils/safeUUID.js';
 
 interface OfflineSyncContextType {
   isOnline: boolean;
@@ -114,7 +115,7 @@ export const OfflineSyncProvider: React.FC<{ children: React.ReactNode }> = ({ c
     class_id: string;
     answers: Record<string, any>;
   }) => {
-    const idempotencyKey = 'offline-sub-' + crypto.randomUUID();
+    const idempotencyKey = 'offline-sub-' + generateUUID();
     const record: OfflineSubmissionRecord = {
       client_idempotency_key: idempotencyKey,
       project_id: data.project_id,

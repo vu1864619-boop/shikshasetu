@@ -42,7 +42,7 @@ jobs:
       - name: Sync Web Assets to Android App
         working-directory: ./frontend
         run: |
-          node -e "const fs = require('fs'); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Copied dist to android assets');"
+          node -e "const fs = require('fs'); fs.rmSync('android/app/src/main/assets/public', {recursive: true, force: true}); fs.cpSync('dist', 'android/app/src/main/assets/public', {recursive: true}); console.log('Cleaned and copied dist to android assets');"
 
       - name: Make Gradlew Executable
         working-directory: ./frontend/android
