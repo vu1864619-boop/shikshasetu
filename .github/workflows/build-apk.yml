@@ -50,27 +50,31 @@ jobs:
         id: build_apk
         working-directory: ./frontend/android
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee /tmp/gradle.log || (echo "=== GRADLE ERROR LOG START ===" && cat /tmp/gradle.log && exit 1)
+          ./gradlew assembleDebug --stacktrace --no-daemon
+          echo "=== Debug APK list inside frontend/android ==="
+          ls -laR app/build/outputs/apk/ || true
 
       - name: Rename and Stage APK
         run: |
           mkdir -p build-artifacts
-          echo "=== Diagnostic: scanning entire workspace for any .apk file ==="
-          find . -type f -name "*.apk"
+          echo "=== Finding any generated APK ==="
+          find . -name "*.apk"
           
-          # Find any .apk in frontend/android or android or current dir
-          APK_FILE=$(find . -type f -name "*.apk" | head -n 1)
-          
-          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
-            echo "SUCCESS: Found APK file at $APK_FILE"
-            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
-            echo "Staged successfully:"
-            ls -lh build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+          if [ -f "frontend/android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp "frontend/android/app/build/outputs/apk/debug/app-debug.apk" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+          elif [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp "android/app/build/outputs/apk/debug/app-debug.apk" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
           else
-            echo "WARNING: No APK found with find, checking direct path"
-            ls -la frontend/android/app/build/outputs/apk/debug/ || true
-            exit 1
+            APK_FILE=$(find . -path "*/outputs/apk/*" -name "*.apk" | head -n 1)
+            if [ -z "$APK_FILE" ]; then
+              APK_FILE=$(find . -name "*.apk" | head -n 1)
+            fi
+            echo "Selected APK: $APK_FILE"
+            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
           fi
+          
+          echo "=== Successfully Staged APK ==="
+          ls -lh build-artifacts/ShikshaSetu-v1.0.0-debug.apk
 
       - name: Upload APK as GitHub Artifact
         uses: actions/upload-artifact@v4
