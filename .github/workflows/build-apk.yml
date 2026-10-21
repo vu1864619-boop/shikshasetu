@@ -50,14 +50,7 @@ jobs:
         id: build_apk
         working-directory: ./frontend/android
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee gradle-build.log
-
-      - name: Inspect Gradle Log If Failed
-        if: failure()
-        working-directory: ./frontend/android
-        run: |
-          echo "==== GRADLE ERROR LOG TAIL ===="
-          tail -n 120 gradle-build.log || true
+          ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Rename and Stage APK
         run: |
