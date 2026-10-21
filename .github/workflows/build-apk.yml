@@ -50,27 +50,33 @@ jobs:
         id: build_apk
         working-directory: ./frontend/android
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon
-          echo "=== Debug APK list inside frontend/android ==="
-          ls -laR app/build/outputs/apk/ || true
+          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee gradle-build.log
+
+      - name: Inspect Gradle Log If Failed
+        if: failure()
+        working-directory: ./frontend/android
+        run: |
+          echo "==== GRADLE ERROR LOG TAIL ===="
+          tail -n 120 gradle-build.log || true
 
       - name: Rename and Stage APK
         run: |
           mkdir -p build-artifacts
-          echo "=== Finding any generated APK ==="
+          echo "=== Diagnostic: Listing all files in outputs ==="
+          ls -laR frontend/android/app/build/outputs || true
+          
+          echo "=== Searching for any .apk file ==="
           find . -name "*.apk"
           
-          if [ -f "frontend/android/app/build/outputs/apk/debug/app-debug.apk" ]; then
-            cp "frontend/android/app/build/outputs/apk/debug/app-debug.apk" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
-          elif [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
-            cp "android/app/build/outputs/apk/debug/app-debug.apk" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
-          else
-            APK_FILE=$(find . -path "*/outputs/apk/*" -name "*.apk" | head -n 1)
-            if [ -z "$APK_FILE" ]; then
-              APK_FILE=$(find . -name "*.apk" | head -n 1)
-            fi
+          APK_FILE=$(find . -name "*.apk" | head -n 1)
+          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
             echo "Selected APK: $APK_FILE"
-            cp "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+            cp -v "$APK_FILE" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+          elif [ -f "frontend/android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp -v "frontend/android/app/build/outputs/apk/debug/app-debug.apk" build-artifacts/ShikshaSetu-v1.0.0-debug.apk
+          else
+            echo "ERROR: No APK generated"
+            exit 1
           fi
           
           echo "=== Successfully Staged APK ==="
